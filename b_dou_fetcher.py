@@ -18,7 +18,8 @@ def url_fetcher(queue_url, queue_save):
             try:
                 url = parse.quote(url, safe="%/:=&?~#+!$,;'@()*[]|")
                 header = {"Accept-encoding": "utf-8",
-                          'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.89 Safari/537.36',}
+                          'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) '
+                                        'Chrome/41.0.2272.89 Safari/537.36'}
                 req = request.Request(url=url, headers=header)
                 resp = request.urlopen(req)
                 soup = BeautifulSoup(resp, "html5lib")

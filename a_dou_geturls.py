@@ -11,17 +11,16 @@ def get_urls(queue_url):
 
     url = "https://movie.douban.com/tag/"
     try:
-        headers = {'Host': 'www.super-ping.com',
-                   'Connection': 'keep-alive',
-                   'Cache-Control': 'max-age=0',
-                   'Accept': 'text/html, */*; q=0.01',
-                   'X-Requested-With': 'XMLHttpRequest',
-                   'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.89 Safari/537.36',
-                   'DNT': '1',
-                   'Referer': 'http://www.super-ping.com/?ping=www.google.com&locale=sc',
-                   'Accept-Encoding': 'gzip, deflate, sdch',
-                   'Accept-Language': 'zh-CN,zh;q=0.8,ja;q=0.6'
-                   }
+        cookie = "_vwo_uuid_v2=E3DF1C1851C8DCC6D914A081334D0A07|113f38aee5ecb34b708c3639c0c6d4b1;_" \
+                 "pk_ref.100001.4cf6=%5B%22%22%2C%22%22%2C1478687617%2C%22https%3A%2F%2F" \
+                 "www.baidu.com%2Fs%3Fwd%3D%25E8%25B1%2586%25E7%2593%25A3%26rsv_spt%3D1%26" \
+                 "rsv_iqid%3D0x8cda56f40002035a%26issp%3D1%26f%3D8%26rsv_bp%3D0%26rsv_id" \
+                 "x%3D2%26ie%3Dutf-8%26tn%3D99055797_hao_pg%26rsv_enter%3D1%26rsv_sug3%3D5%26" \
+                 "rsv_sug1%3D5%26rsv_sug7%3D101%22%5D"
+        headers = {"Accept-encoding": "utf-8",
+                   "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) "
+                                 "Chrome/41.0.2272.89 Safari/537.36",
+                   "cookie": cookie}
         req = request.Request(url=url, data=None, headers=headers)
         resp = request.urlopen(req)
         soup = BeautifulSoup(resp, "html5lib")
