@@ -1,5 +1,6 @@
 # _*_ coding: utf-8 _*_
 
+import time
 import logging
 from bs4 import BeautifulSoup
 from urllib import request, parse, error
@@ -10,6 +11,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 def url_fetcher(queue_url, queue_save):
     while queue_url.qsize() > 0:
+        time.sleep(2)
         print(queue_url.qsize())
         classify, url, comment_count, flag = queue_url.get()
         if flag == "base":

@@ -1,6 +1,7 @@
 # _*_ coding: utf-8 _*_
 
 import re
+import time
 import logging
 from urllib import parse, request, error
 from bs4 import BeautifulSoup
@@ -10,6 +11,7 @@ from z_alche import Movie
 def url_parser(queue_save, detail_url):
     print(queue_save.qsize())
     try:
+        time.sleep(2)
         item_movie = Movie()
         url = parse.quote(detail_url, safe="%/:=&?~#+!$,;'@()*[]|")
         header = {"Accept-encoding": "utf-8"}
