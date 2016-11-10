@@ -12,7 +12,7 @@ logging.basicConfig(level=logging.DEBUG)
 def url_fetcher(queue_url, queue_save):
     while queue_url.qsize() > 0:
         time.sleep(3)
-        print(queue_url.qsize())
+        print("fetcher is running...", queue_url.qsize())
         classify, url, comment_count, flag = queue_url.get()
         if flag == "base":
             try:
@@ -47,13 +47,13 @@ def url_fetcher(queue_url, queue_save):
                 div_movies = soup.find("div", class_="grid-16-8 clearfix").find("div", class_="").find_all("table")
                 for item in div_movies:
                     detail_url = item.find_all("td")[0].find("a")["href"]
-                    print([classify, detail_url, comment_count, "detail"])
+                    print("get detail url...", [classify, detail_url, comment_count, "detail"])
                     queue_url.put([classify, detail_url, comment_count, "detail"])
 
                 next_page = soup.find("div", class_="paginator").find_all("a")[-1].get_text()
                 if next_page.strip() == "后页>":
                     classify_next_page = soup.find("div", class_="paginator").find_all("a")[-1]["href"]
-                    print([classify, classify_next_page, comment_count, flag])
+                    print("get base url...", [classify, classify_next_page, comment_count, flag])
                     queue_url.put([classify, classify_next_page, comment_count, flag])
                 else:
                     logging.debug("This classify get all movies_url: %s", classify)

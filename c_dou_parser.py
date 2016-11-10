@@ -9,7 +9,7 @@ from z_alche import Movie
 
 
 def url_parser(queue_save, detail_url):
-    print(queue_save.qsize())
+    print("parser is running...", queue_save.qsize())
     try:
         time.sleep(3)
         item_movie = Movie()

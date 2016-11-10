@@ -11,7 +11,7 @@ if __name__ == '__main__':
     queue_save = Queue()
     get_urls(queue_url)
     thread_fetch = [Thread(target=url_fetcher, args=(queue_url, queue_save), name="thread_fetch") for i in range(5)]
-    thread_save = [Thread(target=save_movies, args=(queue_save,), name="thread_save") for i in range(2)]
+    thread_save = [Thread(target=save_movies, args=(queue_url, queue_save), name="thread_save") for i in range(2)]
 
     list_threads = list()
 

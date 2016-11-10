@@ -8,7 +8,7 @@ from urllib import request, parse, error
 
 def get_urls(queue_url):
     list_url_tags = []
-    print(queue_url.qsize())
+    print("get_url is running...", queue_url.qsize())
 
     url = "https://movie.douban.com/tag/"
     try:
@@ -38,9 +38,7 @@ def get_urls(queue_url):
         req = request.Request(url=url, data=None, headers=headers)
         resp = request.urlopen(req)
         soup = BeautifulSoup(resp, "html5lib")
-        print(soup)
         tb = soup.find("div", class_="clearfix")
-        print(tb)
         list_title = [item.get_text().replace("·", "").strip() for item in tb.find_all("a", class_="tag-title-wrapper")]
         list_tags = [item.find_all("td") for item in tb.find_all("tbody")]
 
