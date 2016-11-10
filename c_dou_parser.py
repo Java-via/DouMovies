@@ -51,11 +51,11 @@ def url_parser(queue_save, detail_url):
         list_score = [item.get_text() for item in dou_score.find_all("span")[1::2]]
         str_starpercent = re.sub(pattern="[\[\]'\s]", repl="", string=str(list_score))
 
-        item_movie.score = dou_score.find("strong").get_text()
+        score = dou_score.find("strong").get_text()
         list_starpercent = str_starpercent.split(",")
-        item_movie.comment, *star_percent = list_starpercent
-        item_movie.star_percent = re.sub(pattern="[\[\]']", repl="", string=str(star_percent))
-        item_movie.better_than = re.sub(r"[\s]", "", (dou_beterthan.get_text().strip().replace("\n", ","))) if dou_beterthan else ""
+        comment, *star_percent = list_starpercent
+        star_percent = re.sub(pattern="[\[\]']", repl="", string=str(star_percent))
+        better_than = re.sub(r"[\s]", "", (dou_beterthan.get_text().strip().replace("\n", ","))) if dou_beterthan else ""
 
         for line in info.split("\n"):
             if line.find(":") > 0:
@@ -89,10 +89,15 @@ def url_parser(queue_save, detail_url):
         item_movie.country = country if country else ""
         item_movie.language = language if language else ""
 
+        item_movie.score = score if score else -1
+        item_movie.comment = comment if comment else ""
+        item_movie.star_percent = star_percent if star_percent else ""
+
         item_movie.release_time = release_time if release_time else ""
         item_movie.length = length if length else ""
         item_movie.another_name = another_name if another_name else ""
         item_movie.imdb = imdb if imdb else ""
+        item_movie.better_than = better_than if better_than else ""
 
         # print(item_movie.url, item_movie.img_url, item_movie.name, item_movie.year,
         #       item_movie.director, item_movie.screenwriter, item_movie.performer,

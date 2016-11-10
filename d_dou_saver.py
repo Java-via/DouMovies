@@ -1,7 +1,9 @@
 # _*_ coding: utf-8 _*_
 
 import time
+import logging
 import sqlalchemy
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import sessionmaker
 
 
@@ -17,7 +19,10 @@ def save_movies(queue_url, queue_save):
             print("saver is running...", queue_save.qsize())
             movie = queue_save.get()
             print(movie)
-            session.add(movie)
-            session.commit()
-            session.flush()
+            try:
+                session.add(movie)
+                session.commit()
+                session.flush()
+            except SQLAlchemyError as ex:
+                logging.error("Saver error: %s", ex)
     return
