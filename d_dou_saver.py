@@ -24,5 +24,6 @@ def save_movies(queue_url, queue_save):
                 session.commit()
                 session.flush()
             except SQLAlchemyError as ex:
+                session.rollback()
                 logging.error("Saver error: %s", ex)
     return
