@@ -10,10 +10,10 @@ from z_alche import Movie
 
 def url_parser(queue_save, detail_url):
     print("parser is running...", queue_save.qsize())
+    time.sleep(3)
+    item_movie = Movie()
+    url = parse.quote(detail_url, safe="%/:=&?~#+!$,;'@()*[]|")
     try:
-        time.sleep(3)
-        item_movie = Movie()
-        url = parse.quote(detail_url, safe="%/:=&?~#+!$,;'@()*[]|")
         accept_encoding = "utf-8"
         accept_language = "zh-CN,zh;q=0.8"
         cookie = """ll="108288"; bid=KRgXJ-HZyqg; ap=1; ct=y; _
