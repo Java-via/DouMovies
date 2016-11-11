@@ -2,6 +2,7 @@
 
 from queue import Queue
 from threading import Thread
+from pybloom import BloomFilter
 from a_dou_geturls import get_urls
 from b_dou_fetcher import url_fetcher
 from d_dou_saver import save_movies
@@ -9,14 +10,15 @@ from d_dou_saver import save_movies
 if __name__ == '__main__':
     queue_url = Queue()
     queue_save = Queue()
-    get_urls(queue_url)
-    thread_fetch = [Thread(target=url_fetcher, args=(queue_url, queue_save), name="thread_fetch") for i in range(5)]
-    thread_save = [Thread(target=save_movies, args=(queue_url, queue_save), name="thread_save") for i in range(2)]
+    bf_url = BloomFilter(capacity=100000000, error_rate=0.01)
+    get_urls(queue_url, bf_url)
+    thread_fetch = [Thread(target=url_fetcher, args=(queue_url, queue_save, bf_url), name="thread_fetch") for i in range(5)]
+    # thread_save = [Thread(target=save_movies, args=(queue_url, queue_save), name="thread_save") for i in range(2)]
 
     list_threads = list()
 
     list_threads.extend(thread_fetch)
-    list_threads.extend(thread_save)
+    # list_threads.extend(thread_save)
     for th in list_threads:
         print(th.name)
         th.setDaemon(1)

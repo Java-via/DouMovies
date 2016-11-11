@@ -9,7 +9,7 @@ from c_dou_parser import url_parser
 logging.basicConfig(level=logging.DEBUG)
 
 
-def url_fetcher(queue_url, queue_save):
+def url_fetcher(queue_url, queue_save, bf_url):
     while queue_url.qsize() > 0:
         time.sleep(3)
         print("fetcher is running...", queue_url.qsize())
@@ -19,17 +19,7 @@ def url_fetcher(queue_url, queue_save):
                 url = parse.quote(url, safe="%/:=&?~#+!$,;'@()*[]|")
                 accept_encoding = "utf-8"
                 accept_language = "zh-CN,zh;q=0.8"
-                cookie = """ll="108288"; bid=KRgXJ-HZyqg; ap=1; ct=y; _
-                    pk_ref.100001.4cf6=%5B%22%22%2C%22%22%2C1478765905%2C%22
-                    https%3A%2F%2Fwww.baidu.com%2Flink%3Furl%3DFxfrUj65Jds79lwLnCNI-7fZRzFXv2YS_m2kdKN4Qm0d
-                    jOP_HzOoHfQ1PcHYu6tt%26wd%3D%26eqid%3D82773cc90001f0b50000000258242468%22%5D; _
-                    pk_id.100001.4cf6=c4c0fd1104728cb0.1477665951.13.1478765905.1478763637.;
-                    _pk_ses.100001.4cf6=*; __utma=30149280.408279850.1477665952.1478691365.1478763631.10;
-                    __utmb=30149280.4.7.1478764168948; __utmc=30149280;
-                    __utmz=30149280.1478763631.10.3.utmcsr=baidu|utmccn=(organic)|utmcmd=organic;
-                    __utma=223695111.1703187677.1477665952.1478763631.1478765905.10; __utmb=223695111.0.10.1478765905;
-                    __utmc=223695111; __utmz=223695111.1478763631.9.6.utmcsr=baidu|utmccn=(organic)|utmcmd=organic;
-                    _vwo_uuid_v2=E3DF1C1851C8DCC6D914A081334D0A07|113f38aee5ecb34b708c3639c0c6d4b1"""
+                cookie = """ll="108288"; bid=eVWveUvoquI"""
                 host = "movie.douban.com"
                 user_agent = "Mozilla/5.0 (Windows NT 10.0; WOW64) " \
                              "AppleWebKit/537.36 (KHTML, like Gecko) " \
@@ -48,13 +38,15 @@ def url_fetcher(queue_url, queue_save):
                 for item in div_movies:
                     detail_url = item.find_all("td")[0].find("a")["href"]
                     print("get detail url...", [classify, detail_url, comment_count, "detail"])
-                    queue_url.put([classify, detail_url, comment_count, "detail"])
+                    if not bf_url.add(detail_url):
+                        queue_url.put([classify, detail_url, comment_count, "detail"])
 
                 next_page = soup.find("div", class_="paginator").find_all("a")[-1].get_text()
                 if next_page.strip() == "后页>":
                     classify_next_page = soup.find("div", class_="paginator").find_all("a")[-1]["href"]
                     print("get base url...", [classify, classify_next_page, comment_count, flag])
-                    queue_url.put([classify, classify_next_page, comment_count, flag])
+                    if not bf_url.add(classify_next_page):
+                        queue_url.put([classify, classify_next_page, comment_count, flag])
                 else:
                     logging.debug("This classify get all movies_url: %s", classify)
 
