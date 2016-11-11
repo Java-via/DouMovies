@@ -43,6 +43,10 @@ def url_parser(queue_save, detail_url):
         content = soup.find("div", id="content")
         article = soup.find("div", class_="article")
         mainpic = article.find("div", id="mainpic")
+
+        img_url = mainpic.find("a").find("img").get("src")
+        name, year = [item.get_text() for item in content.find("h1").find_all("span")]
+
         dou_score = article.find("div", class_="rating_wrap clearbox")
         dou_beterthan = article.find("div", class_="rating_betterthan")
         info = article.find("div", id="info").get_text()
@@ -78,8 +82,9 @@ def url_parser(queue_save, detail_url):
         imdb = dict_info.get("IMDb链接")
 
         item_movie.url = url
-        item_movie.img_url = mainpic.find("a").find("img").get("src")
-        item_movie.name, item_movie.year = [item.get_text() for item in content.find("h1").find_all("span")]
+        item_movie.img_url = img_url if img_url else ""
+        item_movie.name = name if name else ""
+        item_movie.year = year if year else ""
 
         item_movie.director = director if director else ""
         item_movie.screenwriter = screenwriter if screenwriter else ""
@@ -106,8 +111,8 @@ def url_parser(queue_save, detail_url):
         #       item_movie.better_than, item_movie.imdb)
         queue_save.put(item_movie)
         # save_movies(item_movie)
-    except error.HTTPError as ex:
-        logging.error("Url_fetcher error: %s", ex)
+    except Exception as ex:
+        logging.error("Url_fetcher error: %s, Url is %s", (ex, url))
     return queue_save
 
 # if __name__ == '__main__':

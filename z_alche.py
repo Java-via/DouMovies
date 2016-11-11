@@ -11,7 +11,7 @@ BaseModel = declarative.declarative_base()
 
 # 电影模型
 class Movie(BaseModel):
-    __tablename__ = "tb_doumovies"
+    __tablename__ = "tb_doudou"
     __table_args__ = {
         "mysql_engine": "InnoDB",
         "mysql_charset": "utf8"

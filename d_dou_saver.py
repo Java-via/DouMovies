@@ -18,7 +18,6 @@ def save_movies(queue_url, queue_save):
         else:
             print("saver is running...", queue_save.qsize())
             movie = queue_save.get()
-            print(movie)
             try:
                 session.add(movie)
                 session.commit()
