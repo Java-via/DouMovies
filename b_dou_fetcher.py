@@ -2,7 +2,9 @@
 
 import time
 import logging
+from queue import Queue
 from bs4 import BeautifulSoup
+from pybloom import BloomFilter
 from urllib import request, parse, error
 from c_dou_parser import url_parser
 
@@ -13,7 +15,8 @@ def url_fetcher(queue_url, queue_save, bf_url):
     while queue_url.qsize() > 0:
         time.sleep(3)
         print("fetcher is running...", queue_url.qsize())
-        classify, url, comment_count, flag = queue_url.get()
+        list_url_info = queue_url.get()
+        classify, url, comment_count, flag, repeat = list_url_info
         if flag == "base":
             try:
                 url = parse.quote(url, safe="%/:=&?~#+!$,;'@()*[]|")
@@ -37,27 +40,33 @@ def url_fetcher(queue_url, queue_save, bf_url):
                 div_movies = soup.find("div", class_="grid-16-8 clearfix").find("div", class_="").find_all("table")
                 for item in div_movies:
                     detail_url = item.find_all("td")[0].find("a")["href"]
-                    print("get detail url...", [classify, detail_url, comment_count, "detail"])
+                    print("get detail url...", [classify, detail_url, comment_count, "detail", 2])
                     if not bf_url.add(detail_url):
-                        queue_url.put([classify, detail_url, comment_count, "detail"])
+                        queue_url.put([classify, detail_url, comment_count, "detail", 2])
 
                 next_page = soup.find("div", class_="paginator").find_all("a")[-1].get_text()
                 if next_page.strip() == "后页>":
                     classify_next_page = soup.find("div", class_="paginator").find_all("a")[-1]["href"]
-                    print("get base url...", [classify, classify_next_page, comment_count, flag])
+                    print("get base url...", [classify, classify_next_page, comment_count, flag, 3])
                     if not bf_url.add(classify_next_page):
-                        queue_url.put([classify, classify_next_page, comment_count, flag])
+                        queue_url.put([classify, classify_next_page, comment_count, flag, 3])
                 else:
                     logging.debug("This classify get all movies_url: %s", classify)
-
             except error.HTTPError as ex:
-                logging.error("Url_fetcher error: %s", ex)
+                if repeat >= 0:
+                    repeat -= 1
+                    queue_url.put(classify, url, comment_count, flag, repeat)
+                logging.error("Url_fetcher error: %s, Url is %s", ex, url)
         elif flag == "detail":
-            url_parser(queue_save, url)
+            url_parser(queue_url, queue_save, list_url_info)
         else:
             logging.error("Url: %s, Unknown flag :%s", url, flag)
     return
 
-# if __name__ == '__main__':
-#     classify_item = ['类型:爱情', 'https://movie.douban.com/tag/爱情?start=7840&type=T', '10477121', 'base']
-#     url_fetcher(classify_item)
+if __name__ == '__main__':
+    classify_item = ['类型:爱情', 'https://movie.douban.com/tag/爱情?start=7840&type=T', '10477121', 'base', 3]
+    queue_url = Queue()
+    queue_save = Queue()
+    bf_url = BloomFilter(capacity=100000000, error_rate=0.01)
+    queue_url.put(classify_item)
+    url_fetcher(queue_url, queue_save, bf_url)

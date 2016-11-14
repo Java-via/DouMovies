@@ -3,12 +3,14 @@
 import re
 import time
 import logging
+from queue import Queue
 from urllib import parse, request, error
 from bs4 import BeautifulSoup
-from z_alche import Movie
+from z_alche_movie import Movie
 
 
-def url_parser(queue_save, detail_url):
+def url_parser(queue_url, queue_save, list_url_info):
+    classify, detail_url, comment_count, flag, repeat = list_url_info
     print("parser is running...", queue_save.qsize())
     time.sleep(3)
     item_movie = Movie()
@@ -84,15 +86,17 @@ def url_parser(queue_save, detail_url):
         item_movie.country = country if country else ""
         item_movie.language = language if language else ""
 
-        item_movie.score = score if score else -1
-        item_movie.comment = comment if comment else ""
-        item_movie.star_percent = star_percent if star_percent else ""
-
         item_movie.release_time = release_time if release_time else ""
         item_movie.length = length if length else ""
         item_movie.another_name = another_name if another_name else ""
-        item_movie.imdb = imdb if imdb else ""
+
+        item_movie.score = score if score else -1
+        item_movie.comment = comment if comment else -1
+        item_movie.comment_this_classify = comment_count if comment_count else -1
+
+        item_movie.star_percent = star_percent if star_percent else ""
         item_movie.better_than = better_than if better_than else ""
+        item_movie.imdb = imdb if imdb else ""
 
         # print(item_movie.url, item_movie.img_url, item_movie.name, item_movie.year,
         #       item_movie.director, item_movie.screenwriter, item_movie.performer,
@@ -101,9 +105,17 @@ def url_parser(queue_save, detail_url):
         #       item_movie.better_than, item_movie.imdb)
         queue_save.put(item_movie)
         # save_movies(item_movie)
+    except error.HTTPError as http_ex:
+        if repeat >= 0:
+            repeat -= 1
+            queue_url.put(list_url_info)
+        logging.error("Url_parser error: %s, Url is %s", http_ex, url)
     except Exception as ex:
-        logging.error("Url_fetcher error: %s, Url is %s", (ex, url))
+        logging.error("Url_parser error: %s, Url is %s", ex, url)
     return queue_save
 
-# if __name__ == '__main__':
-#     get_detail("https://movie.douban.com/subject/26340522/")
+if __name__ == '__main__':
+    queue_url = Queue()
+    queue_save = Queue()
+    list_url_info = ['类型:爱情', 'https://movie.douban.com/subject/2173246/', '10477121', 'detail', 2]
+    url_parser(queue_url, queue_save, list_url_info)

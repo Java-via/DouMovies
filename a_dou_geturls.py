@@ -1,13 +1,13 @@
 # _*_ coding: utf-8 _*_
 
 import logging
+from pybloom import BloomFilter
 from queue import Queue
 from bs4 import BeautifulSoup
 from urllib import request, parse, error
 
 
 def get_urls(queue_url, bf_url):
-    list_url_tags = []
     print("get_url is running...", queue_url.qsize())
 
     url = "https://movie.douban.com/tag/"
@@ -38,14 +38,14 @@ def get_urls(queue_url, bf_url):
                 classify_comment = item.get_text().replace(")", "").split("(")
                 item_classify = list_title[i] + ":" + classify_comment[0]
                 comment_count = classify_comment[1]
-                list_url_tags.append([item_classify, url_classify, comment_count, "base"])
                 if not bf_url.add(url_classify):
-                    queue_url.put([item_classify, url_classify, comment_count, "base"])
+                    queue_url.put([item_classify, url_classify, comment_count, "base", 3])
     except error.HTTPError as ex:
         logging.error("Get_urls error: %s", ex)
     print(queue_url.qsize())
     return queue_url, bf_url
 
-# if __name__ == '__main__':
-#     queue_url = Queue()
-#     get_urls(queue_url)
+if __name__ == '__main__':
+    queue_url = Queue()
+    bf_url = BloomFilter(capacity=100000000, error_rate=0.01)
+    get_urls(queue_url, bf_url)

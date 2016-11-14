@@ -11,7 +11,7 @@ BaseModel = declarative.declarative_base()
 
 # 电影模型
 class Movie(BaseModel):
-    __tablename__ = "tb_doudou"
+    __tablename__ = "tb_doumovies"
     __table_args__ = {
         "mysql_engine": "InnoDB",
         "mysql_charset": "utf8"
@@ -36,7 +36,9 @@ class Movie(BaseModel):
     another_name = sqlalchemy.Column("m_anothername", sqlalchemy.VARCHAR)
 
     score = sqlalchemy.Column("m_score", sqlalchemy.Float)
-    comment = sqlalchemy.Column("m_comment", sqlalchemy.VARCHAR)
+    comment = sqlalchemy.Column("m_comment", sqlalchemy.INTEGER)
+    comment_this_classify = sqlalchemy.Column("m_all_comment", sqlalchemy.INTEGER)
+
     star_percent = sqlalchemy.Column("m_starpercent", sqlalchemy.VARCHAR)
     better_than = sqlalchemy.Column("m_betterthan", sqlalchemy.VARCHAR)
     imdb = sqlalchemy.Column("m_imdb", sqlalchemy.VARCHAR)
