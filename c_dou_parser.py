@@ -3,35 +3,22 @@
 import re
 import time
 import logging
+import requests
 from queue import Queue
-from urllib import parse, request, error
+from urllib import parse
 from bs4 import BeautifulSoup
 from z_alche_movie import Movie
 
 
-def url_parser(queue_url, queue_save, list_url_info):
+def url_parser(queue_url, queue_save, list_url_info, req_session):
     classify, detail_url, comment_count, flag, repeat = list_url_info
     print("parser is running...", queue_save.qsize())
     time.sleep(3)
     item_movie = Movie()
     url = parse.quote(detail_url, safe="%/:=&?~#+!$,;'@()*[]|")
     try:
-        accept_encoding = "utf-8"
-        accept_language = "zh-CN,zh;q=0.8"
-        cookie = """ll="108288"; bid=eVWveUvoquI"""
-        host = "movie.douban.com"
-        user_agent = "Mozilla/5.0 (Windows NT 10.0; WOW64) " \
-                     "AppleWebKit/537.36 (KHTML, like Gecko) " \
-                     "Chrome/53.0.2785.116 Safari/537.36"
-
-        headers = {"Accept-encoding": accept_encoding,
-                   "Accept-language": accept_language,
-                   "User-Agent": user_agent,
-                   "Cookie": cookie,
-                   "Host": host}
-        req = request.Request(url=url, data=None, headers=headers)
-        resp = request.urlopen(req)
-        soup = BeautifulSoup(resp, "html5lib")
+        resp = req_session.get(url)
+        soup = BeautifulSoup(resp.text, "html5lib")
         content = soup.find("div", id="content")
         article = soup.find("div", class_="article")
         mainpic = article.find("div", id="mainpic")
@@ -115,14 +102,16 @@ def url_parser(queue_url, queue_save, list_url_info):
         item_movie.imdb = imdb if imdb else ""
         item_movie.is_movie = is_movie
 
-        # print(item_movie.url, item_movie.img_url, item_movie.name, item_movie.year,
-        #       item_movie.director, item_movie.screenwriter, item_movie.performer,
-        #       item_movie.genre, item_movie.country, item_movie.language,
-        #       item_movie.release_time, item_movie.length, item_movie.another_name,
-        #       item_movie.better_than, item_movie.imdb)
+        print(item_movie.url, item_movie.img_url, item_movie.name, item_movie.year,
+              item_movie.director, item_movie.screenwriter, item_movie.performer,
+              item_movie.genre, item_movie.country, item_movie.language,
+              item_movie.release_time, item_movie.length, item_movie.another_name,
+              item_movie.score, item_movie.comment, item_movie.comment_this_classify,
+              item_movie.star_percent, item_movie.better_than, item_movie.imdb, item_movie.is_movie)
         queue_save.put(item_movie)
         # save_movies(item_movie)
-    except error.HTTPError as http_ex:
+    except requests.HTTPError as http_ex:
+        req_session.cookies.clear_session_cookies()
         if repeat >= 0:
             repeat -= 1
             queue_url.put(list_url_info)
@@ -134,5 +123,6 @@ def url_parser(queue_url, queue_save, list_url_info):
 if __name__ == '__main__':
     queue_url = Queue()
     queue_save = Queue()
+    req_session = requests.session()
     list_url_info = ['类型:爱情', 'https://movie.douban.com/subject/2173246/', '10477121', 'detail', 2]
-    url_parser(queue_url, queue_save, list_url_info)
+    url_parser(queue_url, queue_save, list_url_info, req_session)

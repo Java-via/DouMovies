@@ -1,5 +1,6 @@
 # _*_ coding: utf-8 _*_
 
+import requests
 from queue import Queue
 from threading import Thread
 from pybloom import BloomFilter
@@ -11,8 +12,9 @@ if __name__ == '__main__':
     queue_url = Queue()
     queue_save = Queue()
     bf_url = BloomFilter(capacity=100000000, error_rate=0.01)
-    get_urls(queue_url, bf_url)
-    thread_fetch = [Thread(target=url_fetcher, args=(queue_url, queue_save, bf_url), name="thread_fetch") for i in range(5)]
+    req_session = requests.session()
+    get_urls(queue_url, bf_url, req_session)
+    thread_fetch = [Thread(target=url_fetcher, args=(queue_url, queue_save, bf_url, req_session), name="thread_fetch") for i in range(5)]
     thread_save = [Thread(target=save_movies, args=(queue_url, queue_save), name="thread_save") for i in range(2)]
 
     list_threads = list()

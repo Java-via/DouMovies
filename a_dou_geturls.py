@@ -1,33 +1,21 @@
 # _*_ coding: utf-8 _*_
 
 import logging
+import requests
 from pybloom import BloomFilter
 from queue import Queue
 from bs4 import BeautifulSoup
-from urllib import request, parse, error
+from urllib import parse
 
 
-def get_urls(queue_url, bf_url):
-    print("get_url is running...", queue_url.qsize())
-
-    url = "https://movie.douban.com/tag/"
+def get_urls(queue_url, bf_url, req_session):
     try:
-        accept_encoding = "utf-8"
-        accept_language = "zh-CN,zh;q=0.8"
-        cookie = """ll="108288"; bid=eVWveUvoquI"""
-        host = "movie.douban.com"
-        user_agent = "Mozilla/5.0 (Windows NT 10.0; WOW64) " \
-                     "AppleWebKit/537.36 (KHTML, like Gecko) " \
-                     "Chrome/53.0.2785.116 Safari/537.36"
+        print("get_url is running...", queue_url.qsize())
 
-        headers = {"Accept-encoding": accept_encoding,
-                   "Accept-language": accept_language,
-                   "User-Agent": user_agent,
-                   "Cookie": cookie,
-                   "Host": host}
-        req = request.Request(url=url, data=None, headers=headers)
-        resp = request.urlopen(req)
-        soup = BeautifulSoup(resp, "html5lib")
+        url = "https://movie.douban.com/tag/"
+        resp = req_session.get(url)
+
+        soup = BeautifulSoup(resp.text, "html5lib")
         tb = soup.find("div", class_="clearfix")
         list_title = [item.get_text().replace("·", "").strip() for item in tb.find_all("a", class_="tag-title-wrapper")]
         list_tags = [item.find_all("td") for item in tb.find_all("tbody")]
@@ -40,12 +28,15 @@ def get_urls(queue_url, bf_url):
                 comment_count = classify_comment[1]
                 if not bf_url.add(url_classify):
                     queue_url.put([item_classify, url_classify, comment_count, "base", 3])
-    except error.HTTPError as ex:
-        logging.error("Get_urls error: %s", ex)
+    except requests.HTTPError as ex:
+        req_session.cookies.clear_session_cookies()
+        print(ex)
+
     print(queue_url.qsize())
     return queue_url, bf_url
 
 if __name__ == '__main__':
     queue_url = Queue()
     bf_url = BloomFilter(capacity=100000000, error_rate=0.01)
-    get_urls(queue_url, bf_url)
+    req_session = requests.Session()
+    get_urls(queue_url, bf_url, req_session)

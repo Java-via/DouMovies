@@ -2,16 +2,17 @@
 
 import time
 import logging
+import requests
 from queue import Queue
 from bs4 import BeautifulSoup
 from pybloom import BloomFilter
-from urllib import request, parse, error
+from urllib import parse
 from c_dou_parser import url_parser
 
 logging.basicConfig(level=logging.DEBUG)
 
 
-def url_fetcher(queue_url, queue_save, bf_url):
+def url_fetcher(queue_url, queue_save, bf_url, req_session):
     while queue_url.qsize() > 0:
         time.sleep(3)
         print("fetcher is running...", queue_url.qsize())
@@ -20,22 +21,8 @@ def url_fetcher(queue_url, queue_save, bf_url):
         if flag == "base":
             try:
                 url = parse.quote(url, safe="%/:=&?~#+!$,;'@()*[]|")
-                accept_encoding = "utf-8"
-                accept_language = "zh-CN,zh;q=0.8"
-                cookie = """ll="108288"; bid=eVWveUvoquI"""
-                host = "movie.douban.com"
-                user_agent = "Mozilla/5.0 (Windows NT 10.0; WOW64) " \
-                             "AppleWebKit/537.36 (KHTML, like Gecko) " \
-                             "Chrome/53.0.2785.116 Safari/537.36"
-
-                headers = {"Accept-encoding": accept_encoding,
-                           "Accept-language": accept_language,
-                           "User-Agent": user_agent,
-                           "Cookie": cookie,
-                           "Host": host}
-                req = request.Request(url=url, data=None, headers=headers)
-                resp = request.urlopen(req)
-                soup = BeautifulSoup(resp, "html5lib")
+                resp = req_session.get(url)
+                soup = BeautifulSoup(resp.text, "html5lib")
 
                 div_movies = soup.find("div", class_="grid-16-8 clearfix").find("div", class_="").find_all("table")
                 for item in div_movies:
@@ -52,13 +39,14 @@ def url_fetcher(queue_url, queue_save, bf_url):
                         queue_url.put([classify, classify_next_page, comment_count, flag, 3])
                 else:
                     logging.debug("This classify get all movies_url: %s", classify)
-            except error.HTTPError as ex:
+            except requests.HTTPError as ex:
+                req_session.cookies.clear_session_cookies()
                 if repeat >= 0:
                     repeat -= 1
                     queue_url.put(classify, url, comment_count, flag, repeat)
                 logging.error("Url_fetcher error: %s, Url is %s", ex, url)
         elif flag == "detail":
-            url_parser(queue_url, queue_save, list_url_info)
+            url_parser(queue_url, queue_save, list_url_info, req_session)
         else:
             logging.error("Url: %s, Unknown flag :%s", url, flag)
     return
@@ -68,5 +56,6 @@ if __name__ == '__main__':
     queue_url = Queue()
     queue_save = Queue()
     bf_url = BloomFilter(capacity=100000000, error_rate=0.01)
+    req_session = requests.session()
     queue_url.put(classify_item)
-    url_fetcher(queue_url, queue_save, bf_url)
+    url_fetcher(queue_url, queue_save, bf_url, req_session)
