@@ -60,18 +60,34 @@ def url_parser(queue_url, queue_save, list_url_info):
         for item in list_info:
             dict_info[item.split(":")[0]] = item.split(":")[1].strip()
 
-        director = dict_info.get("导演")
-        screenwriter = dict_info.get("编剧")
-        performer = dict_info.get("主演")
+        if not dict_info.get("集数"):
+            director = dict_info.get("导演")
+            screenwriter = dict_info.get("编剧")
+            performer = dict_info.get("主演")
 
-        genre = dict_info.get("类型")
-        country = dict_info.get("制片国家/地区")
-        language = dict_info.get("语言")
+            genre = dict_info.get("类型")
+            country = dict_info.get("制片国家/地区")
+            language = dict_info.get("语言")
 
-        release_time = dict_info.get("上映日期")
-        length = dict_info.get("片长")
-        another_name = dict_info.get("又名")
-        imdb = dict_info.get("IMDb链接")
+            release_time = dict_info.get("上映日期")
+            length = dict_info.get("片长")
+            another_name = dict_info.get("又名")
+            imdb = dict_info.get("IMDb链接")
+            is_movie = 1
+        else:
+            director = dict_info.get("导演")
+            screenwriter = dict_info.get("编剧")
+            performer = dict_info.get("主演")
+
+            genre = dict_info.get("类型")
+            country = dict_info.get("制片国家/地区")
+            language = dict_info.get("语言")
+
+            release_time = dict_info.get("首播")
+            length = dict_info.get("单集片长")
+            another_name = dict_info.get("又名")
+            imdb = dict_info.get("IMDb链接")
+            is_movie = 0
 
         item_movie.url = url
         item_movie.img_url = img_url if img_url else ""
@@ -97,6 +113,7 @@ def url_parser(queue_url, queue_save, list_url_info):
         item_movie.star_percent = star_percent if star_percent else ""
         item_movie.better_than = better_than if better_than else ""
         item_movie.imdb = imdb if imdb else ""
+        item_movie.is_movie = is_movie
 
         # print(item_movie.url, item_movie.img_url, item_movie.name, item_movie.year,
         #       item_movie.director, item_movie.screenwriter, item_movie.performer,

@@ -42,6 +42,7 @@ class Movie(BaseModel):
     star_percent = sqlalchemy.Column("m_starpercent", sqlalchemy.VARCHAR)
     better_than = sqlalchemy.Column("m_betterthan", sqlalchemy.VARCHAR)
     imdb = sqlalchemy.Column("m_imdb", sqlalchemy.VARCHAR)
+    is_movie = sqlalchemy.Column("m_ismovies", sqlalchemy.SmallInteger)
 
 
 # DBSession = sessionmaker(bind=engine)
