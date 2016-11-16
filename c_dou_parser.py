@@ -11,10 +11,9 @@ from z_logcnf import log_init
 from z_alche_movie import Movie
 
 
-def url_parser(queue_url, queue_save, list_url_info, req_session):
-    logger_parser = log_init("url_parser")
+def url_parser(queue_url, queue_save, list_url_info, req_session, logger):
     classify, detail_url, comment_count, flag, repeat = list_url_info
-    logger_parser.debug("parser is running...%s", queue_save.qsize())
+    logger.debug("parser is running...%s", queue_save.qsize())
     time.sleep(3)
     item_movie = Movie()
     # url = parse.quote(detail_url, safe="%/:=&?~#+!$,;'@()*[]|")
@@ -120,14 +119,15 @@ def url_parser(queue_url, queue_save, list_url_info, req_session):
         if repeat >= 0:
             repeat -= 1
             queue_url.put(list_url_info)
-        logger_parser.error("Url_parser error: %s, Url is %s", http_ex, url)
+        logger.error("Url_parser error: %s, Url is %s", http_ex, url)
     except Exception as ex:
-        logger_parser.error("Url_parser error: %s, Url is %s", ex, url)
+        logger.error("Url_parser error: %s, Url is %s", ex, url)
     return queue_save
 
 if __name__ == '__main__':
     queue_url = Queue()
     queue_save = Queue()
     req_session = requests.session()
+    logger = log_init("parser")
     list_url_info = ['类型:爱情', 'https://movie.douban.com/subject/2173246/', '10477121', 'detail', 2]
-    url_parser(queue_url, queue_save, list_url_info, req_session)
+    url_parser(queue_url, queue_save, list_url_info, req_session, logger)

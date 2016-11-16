@@ -4,9 +4,10 @@ import requests
 from queue import Queue
 from threading import Thread
 from pybloom import BloomFilter
+from z_logcnf import log_init
 from a_dou_geturls import get_urls
-from b_dou_fetcher import url_fetcher
 from d_dou_saver import save_movies
+from b_dou_fetcher import url_fetcher
 
 if __name__ == '__main__':
     queue_url = Queue()
@@ -14,9 +15,10 @@ if __name__ == '__main__':
     bf_url = BloomFilter(capacity=100000000, error_rate=0.01)
     req_session = requests.session()
     requests.packages.urllib3.disable_warnings()   # 关闭requests日志输出
+    logger = log_init("logging_dou")
     get_urls(queue_url, bf_url, req_session)
-    thread_fetch = [Thread(target=url_fetcher, args=(queue_url, queue_save, bf_url, req_session), name="thread_fetch") for i in range(5)]
-    thread_save = [Thread(target=save_movies, args=(queue_url, queue_save), name="thread_save") for i in range(2)]
+    thread_fetch = [Thread(target=url_fetcher, args=(queue_url, queue_save, bf_url, req_session, logger), name="thread_fetch") for i in range(5)]
+    thread_save = [Thread(target=save_movies, args=(queue_url, queue_save, logger), name="thread_save") for i in range(2)]
 
     list_threads = list()
 

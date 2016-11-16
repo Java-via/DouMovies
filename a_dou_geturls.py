@@ -9,10 +9,9 @@ from bs4 import BeautifulSoup
 from z_logcnf import log_init
 
 
-def get_urls(queue_url, bf_url, req_session):
-    logger_geturl = log_init("get_url")
+def get_urls(queue_url, bf_url, req_session, logger):
     try:
-        logger_geturl.debug("get_url is running... %s", queue_url.qsize())
+        logger.debug("get_url is running... %s", queue_url.qsize())
 
         url = "https://movie.douban.com/tag/"
         resp = req_session.get(url)
@@ -33,13 +32,14 @@ def get_urls(queue_url, bf_url, req_session):
                     queue_url.put([item_classify, url_classify, comment_count, "base", 3])
     except requests.HTTPError as ex:
         req_session.cookies.clear_session_cookies()
-        logger_geturl.error("Get_urls error: %s", ex)
+        logger.error("Get_urls error: %s", ex)
 
-    logger_geturl.debug(queue_url.qsize())
+    logger.debug(queue_url.qsize())
     return queue_url, bf_url
 
 if __name__ == '__main__':
     queue_url = Queue()
     bf_url = BloomFilter(capacity=100000000, error_rate=0.01)
     req_session = requests.Session()
-    get_urls(queue_url, bf_url, req_session)
+    logger = log_init("get_url")
+    get_urls(queue_url, bf_url, req_session, logger)
