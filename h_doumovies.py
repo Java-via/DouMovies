@@ -16,7 +16,7 @@ if __name__ == '__main__':
     req_session = requests.session()
     requests.packages.urllib3.disable_warnings()   # 关闭requests日志输出
     logger = log_init("logging_dou")
-    get_urls(queue_url, bf_url, req_session)
+    get_urls(queue_url, bf_url, req_session, logger)
     thread_fetch = [Thread(target=url_fetcher, args=(queue_url, queue_save, bf_url, req_session, logger), name="thread_fetch") for i in range(5)]
     thread_save = [Thread(target=save_movies, args=(queue_url, queue_save, logger), name="thread_save") for i in range(2)]
 
