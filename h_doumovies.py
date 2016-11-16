@@ -13,6 +13,7 @@ if __name__ == '__main__':
     queue_save = Queue()
     bf_url = BloomFilter(capacity=100000000, error_rate=0.01)
     req_session = requests.session()
+    requests.packages.urllib3.disable_warnings()   # 关闭requests日志输出
     get_urls(queue_url, bf_url, req_session)
     thread_fetch = [Thread(target=url_fetcher, args=(queue_url, queue_save, bf_url, req_session), name="thread_fetch") for i in range(5)]
     thread_save = [Thread(target=save_movies, args=(queue_url, queue_save), name="thread_save") for i in range(2)]

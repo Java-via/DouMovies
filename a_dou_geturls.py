@@ -1,16 +1,18 @@
 # _*_ coding: utf-8 _*_
 
-import logging
+# import logging
 import requests
-from pybloom import BloomFilter
 from queue import Queue
+# from urllib import parse
+from pybloom import BloomFilter
 from bs4 import BeautifulSoup
-from urllib import parse
+from z_logcnf import log_init
 
 
 def get_urls(queue_url, bf_url, req_session):
+    logger_geturl = log_init("get_url")
     try:
-        print("get_url is running...", queue_url.qsize())
+        logger_geturl.debug("get_url is running... %s", queue_url.qsize())
 
         url = "https://movie.douban.com/tag/"
         resp = req_session.get(url)
@@ -22,7 +24,8 @@ def get_urls(queue_url, bf_url, req_session):
 
         for i in range(len(list_tags)):
             for item in list_tags[i]:
-                url_classify = parse.urljoin(base="https://movie.douban.com/tag/", url=item.a["href"])
+                url_classify = item.a["href"]
+                # url_classify = parse.urljoin(base="https://movie.douban.com/tag/", url=item.a["href"])
                 classify_comment = item.get_text().replace(")", "").split("(")
                 item_classify = list_title[i] + ":" + classify_comment[0]
                 comment_count = classify_comment[1]
@@ -30,9 +33,9 @@ def get_urls(queue_url, bf_url, req_session):
                     queue_url.put([item_classify, url_classify, comment_count, "base", 3])
     except requests.HTTPError as ex:
         req_session.cookies.clear_session_cookies()
-        print(ex)
+        logger_geturl.error("Get_urls error: %s", ex)
 
-    print(queue_url.qsize())
+    logger_geturl.debug(queue_url.qsize())
     return queue_url, bf_url
 
 if __name__ == '__main__':

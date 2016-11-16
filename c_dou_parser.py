@@ -2,20 +2,23 @@
 
 import re
 import time
-import logging
+# import logging
 import requests
 from queue import Queue
-from urllib import parse
+# from urllib import parse
 from bs4 import BeautifulSoup
+from z_logcnf import log_init
 from z_alche_movie import Movie
 
 
 def url_parser(queue_url, queue_save, list_url_info, req_session):
+    logger_parser = log_init("url_parser")
     classify, detail_url, comment_count, flag, repeat = list_url_info
-    print("parser is running...", queue_save.qsize())
+    logger_parser.debug("parser is running...%s", queue_save.qsize())
     time.sleep(3)
     item_movie = Movie()
-    url = parse.quote(detail_url, safe="%/:=&?~#+!$,;'@()*[]|")
+    # url = parse.quote(detail_url, safe="%/:=&?~#+!$,;'@()*[]|")
+    url = detail_url
     try:
         resp = req_session.get(url)
         soup = BeautifulSoup(resp.text, "html5lib")
@@ -102,22 +105,24 @@ def url_parser(queue_url, queue_save, list_url_info, req_session):
         item_movie.imdb = imdb if imdb else ""
         item_movie.is_movie = is_movie
 
-        print(item_movie.url, item_movie.img_url, item_movie.name, item_movie.year,
-              item_movie.director, item_movie.screenwriter, item_movie.performer,
-              item_movie.genre, item_movie.country, item_movie.language,
-              item_movie.release_time, item_movie.length, item_movie.another_name,
-              item_movie.score, item_movie.comment, item_movie.comment_this_classify,
-              item_movie.star_percent, item_movie.better_than, item_movie.imdb, item_movie.is_movie)
+        # for test
+        # print(item_movie.url, item_movie.img_url, item_movie.name, item_movie.year,
+        #       item_movie.director, item_movie.screenwriter, item_movie.performer,
+        #       item_movie.genre, item_movie.country, item_movie.language,
+        #       item_movie.release_time, item_movie.length, item_movie.another_name,
+        #       item_movie.score, item_movie.comment, item_movie.comment_this_classify,
+        #       item_movie.star_percent, item_movie.better_than, item_movie.imdb, item_movie.is_movie)
         queue_save.put(item_movie)
+        # for test
         # save_movies(item_movie)
     except requests.HTTPError as http_ex:
         req_session.cookies.clear_session_cookies()
         if repeat >= 0:
             repeat -= 1
             queue_url.put(list_url_info)
-        logging.error("Url_parser error: %s, Url is %s", http_ex, url)
+        logger_parser.error("Url_parser error: %s, Url is %s", http_ex, url)
     except Exception as ex:
-        logging.error("Url_parser error: %s, Url is %s", ex, url)
+        logger_parser.error("Url_parser error: %s, Url is %s", ex, url)
     return queue_save
 
 if __name__ == '__main__':

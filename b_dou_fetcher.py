@@ -1,54 +1,54 @@
 # _*_ coding: utf-8 _*_
 
 import time
-import logging
+# import logging
 import requests
 from queue import Queue
+# from urllib import parse
 from bs4 import BeautifulSoup
 from pybloom import BloomFilter
-from urllib import parse
 from c_dou_parser import url_parser
-
-logging.basicConfig(level=logging.DEBUG)
+from z_logcnf import log_init
 
 
 def url_fetcher(queue_url, queue_save, bf_url, req_session):
+    logger_fetcher = log_init("url_fetcher")
     while queue_url.qsize() > 0:
         time.sleep(3)
-        print("fetcher is running...", queue_url.qsize())
+        logger_fetcher.debug("fetcher is running... %s", queue_url.qsize())
         list_url_info = queue_url.get()
         classify, url, comment_count, flag, repeat = list_url_info
         if flag == "base":
             try:
-                url = parse.quote(url, safe="%/:=&?~#+!$,;'@()*[]|")
+                # url = parse.quote(url, safe="%/:=&?~#+!$,;'@()*[]|")
                 resp = req_session.get(url)
                 soup = BeautifulSoup(resp.text, "html5lib")
 
                 div_movies = soup.find("div", class_="grid-16-8 clearfix").find("div", class_="").find_all("table")
                 for item in div_movies:
                     detail_url = item.find_all("td")[0].find("a")["href"]
-                    print("get detail url...", [classify, detail_url, comment_count, "detail", 2])
+                    logger_fetcher.debug("get detail url...%s, %s, %s, %s, %s", classify, detail_url, comment_count, "detail", 2)
                     if not bf_url.add(detail_url):
                         queue_url.put([classify, detail_url, comment_count, "detail", 2])
 
                 next_page = soup.find("div", class_="paginator").find_all("a")[-1].get_text()
                 if next_page.strip() == "后页>":
                     classify_next_page = soup.find("div", class_="paginator").find_all("a")[-1]["href"]
-                    print("get base url...", [classify, classify_next_page, comment_count, flag, 3])
+                    logger_fetcher.debug("get base url...%s, %s, %s, %s, %s", classify, classify_next_page, comment_count, flag, 3)
                     if not bf_url.add(classify_next_page):
                         queue_url.put([classify, classify_next_page, comment_count, flag, 3])
                 else:
-                    logging.debug("This classify get all movies_url: %s", classify)
+                    logger_fetcher.debug("This classify get all movies_url: %s", classify)
             except requests.HTTPError as ex:
                 req_session.cookies.clear_session_cookies()
                 if repeat >= 0:
                     repeat -= 1
                     queue_url.put(classify, url, comment_count, flag, repeat)
-                logging.error("Url_fetcher error: %s, Url is %s", ex, url)
+                logger_fetcher.error("Url_fetcher error: %s, Url is %s", ex, url)
         elif flag == "detail":
             url_parser(queue_url, queue_save, list_url_info, req_session)
         else:
-            logging.error("Url: %s, Unknown flag :%s", url, flag)
+            logger_fetcher.error("Url: %s, Unknown flag :%s", url, flag)
     return
 
 if __name__ == '__main__':
