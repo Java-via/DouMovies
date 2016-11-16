@@ -11,6 +11,7 @@ from z_logcnf import log_init
 def save_movies(queue_url, queue_save):
     logger_save = log_init("save_movies")
     engine = sqlalchemy.create_engine("mysql+pymysql://root:123@localhost:3306/db_doumovies?charset=utf8", echo=True)
+    # engine = sqlalchemy.create_engine("mysql+pymysql://root:mysql123@localhost:3306/db_doumovies?charset=utf8", echo=True)
     db_session = sessionmaker(bind=engine)
     session = db_session()
     while (queue_save.qsize() > 0) or (queue_url.qsize() > 0):

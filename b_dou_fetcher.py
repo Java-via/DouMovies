@@ -4,7 +4,7 @@ import time
 # import logging
 import requests
 from queue import Queue
-# from urllib import parse
+from urllib import parse
 from bs4 import BeautifulSoup
 from pybloom import BloomFilter
 from c_dou_parser import url_parser
@@ -26,7 +26,7 @@ def url_fetcher(queue_url, queue_save, bf_url, req_session):
 
                 div_movies = soup.find("div", class_="grid-16-8 clearfix").find("div", class_="").find_all("table")
                 for item in div_movies:
-                    detail_url = item.find_all("td")[0].find("a")["href"]
+                    detail_url = parse.urljoin(base="https://movie.douban.com/tag/", url=item.find_all("td")[0].find("a")["href"])
                     logger_fetcher.debug("get detail url...%s, %s, %s, %s, %s", classify, detail_url, comment_count, "detail", 2)
                     if not bf_url.add(detail_url):
                         queue_url.put([classify, detail_url, comment_count, "detail", 2])

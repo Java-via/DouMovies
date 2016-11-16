@@ -3,7 +3,7 @@
 # import logging
 import requests
 from queue import Queue
-# from urllib import parse
+from urllib import parse
 from pybloom import BloomFilter
 from bs4 import BeautifulSoup
 from z_logcnf import log_init
@@ -24,8 +24,8 @@ def get_urls(queue_url, bf_url, req_session):
 
         for i in range(len(list_tags)):
             for item in list_tags[i]:
-                url_classify = item.a["href"]
-                # url_classify = parse.urljoin(base="https://movie.douban.com/tag/", url=item.a["href"])
+                # url_classify = item.a["href"]
+                url_classify = parse.urljoin(base="https://movie.douban.com/tag/", url=item.a["href"])
                 classify_comment = item.get_text().replace(")", "").split("(")
                 item_classify = list_title[i] + ":" + classify_comment[0]
                 comment_count = classify_comment[1]
