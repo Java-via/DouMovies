@@ -44,6 +44,8 @@ def url_fetcher(queue_url, queue_save, bf_url, req_session, logger):
                     repeat -= 1
                     queue_url.put(classify, url, comment_count, flag, repeat)
                 logger.error("Url_fetcher error: %s, Url is %s", ex, url)
+            except Exception as exce:
+                logger.error("Error is %s, Url is %s", exce, url)
         elif flag == "detail":
             url_parser(queue_url, queue_save, list_url_info, req_session, logger)
         else:

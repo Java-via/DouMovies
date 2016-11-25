@@ -103,6 +103,7 @@ def url_parser(queue_url, queue_save, list_url_info, req_session, logger):
         item_movie.better_than = better_than if better_than else ""
         item_movie.imdb = imdb if imdb else ""
         item_movie.is_movie = is_movie
+        item_movie.get_date = time.strftime("%Y-%m-%d")
 
         # for test
         # print(item_movie.url, item_movie.img_url, item_movie.name, item_movie.year,

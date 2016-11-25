@@ -4,7 +4,7 @@ import sqlalchemy
 from sqlalchemy.ext import declarative
 # from sqlalchemy.orm import sessionmaker
 
-# engine = sqlalchemy.create_engine("mysql+pymysql://root:123@localhost:3306/db_doumovies?charset=utf8", echo=True)
+engine = sqlalchemy.create_engine("mysql+pymysql://appuser:123@localhost:3306/db_doumovies?charset=utf8", echo=True)
 
 BaseModel = declarative.declarative_base()
 
@@ -42,7 +42,8 @@ class Movie(BaseModel):
     star_percent = sqlalchemy.Column("m_starpercent", sqlalchemy.VARCHAR)
     better_than = sqlalchemy.Column("m_betterthan", sqlalchemy.VARCHAR)
     imdb = sqlalchemy.Column("m_imdb", sqlalchemy.VARCHAR)
-    is_movie = sqlalchemy.Column("m_ismovies", sqlalchemy.SmallInteger)
+    is_movie = sqlalchemy.Column("m_ismovie", sqlalchemy.SmallInteger)
+    get_date = sqlalchemy.Column("m_getdate", sqlalchemy.DATE)
 
 
 # DBSession = sessionmaker(bind=engine)
