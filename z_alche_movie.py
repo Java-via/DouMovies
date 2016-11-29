@@ -4,7 +4,7 @@ import sqlalchemy
 from sqlalchemy.ext import declarative
 # from sqlalchemy.orm import sessionmaker
 
-engine = sqlalchemy.create_engine("mysql+pymysql://appuser:123@localhost:3306/db_doumovies?charset=utf8", echo=True)
+engine = sqlalchemy.create_engine("mysql+pymysql://root:123@localhost:3306/db_doumovies?charset=utf8", echo=True)
 
 BaseModel = declarative.declarative_base()
 
@@ -45,13 +45,13 @@ class Movie(BaseModel):
     is_movie = sqlalchemy.Column("m_ismovie", sqlalchemy.SmallInteger)
     get_date = sqlalchemy.Column("m_getdate", sqlalchemy.DATE)
 
-
-# DBSession = sessionmaker(bind=engine)
-# session = DBSession()
+# if __name__ == '__main__':
+#     DBSession = sessionmaker(bind=engine)
+#     session = DBSession()
 #
-# session.add(Movie(url="www.baidu.com", img_url="www.baidu.com", name="模型", year="2016",
-#                   director="导演", screen_writer="编辑", performer="演员",
-#                   genre="类别", country="国家", language="语言",
-#                   release_time="上映时间", length="时长", another_name="别名",
-#                   score=10.0, comment="评价", star_percent="星级比例", imdb="imdb"))
-# session.commit()
+#     session.add(Movie(url="www.baidu.com", img_url="www.baidu.com", name="模型", year="2016",
+#                       director="导演", screenwriter="编辑", performer="演员",
+#                       genre="类别", country="国家", language="语言",
+#                       release_time="上映时间", length="时长", another_name="别名",
+#                       score=10.0, comment="评价", star_percent="星级比例", imdb="imdb"))
+#     session.commit()
