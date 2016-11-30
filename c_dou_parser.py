@@ -53,7 +53,7 @@ def url_parser(queue_fetch, queue_parse, queue_save, bf_url, logger):
                     mainpic = article.find("div", id="mainpic")
 
                     img_url = mainpic.find("a").find("img").get("src")
-                    name, year = [item.get_text() for item in content.find("h1").find_all("span")]
+                    name, *year = [item.get_text() for item in content.find("h1").find_all("span")]
 
                     dou_score = article.find("div", class_="rating_wrap clearbox")
                     dou_beterthan = article.find("div", class_="rating_betterthan")
@@ -100,7 +100,8 @@ def url_parser(queue_fetch, queue_parse, queue_save, bf_url, logger):
                         language = dict_info.get("语言")
 
                         release_time = dict_info.get("首播")
-                        length = dict_info.get("单集片长") + "," + dict_info.get("集数")
+                        length = dict_info.get("单集片长") if dict_info.get("单集片长") else ""
+                        length += "," + dict_info.get("集数") if dict_info.get("集数") else ""
                         another_name = dict_info.get("又名")
                         imdb = dict_info.get("IMDb链接")
                         is_movie = 0
@@ -108,7 +109,7 @@ def url_parser(queue_fetch, queue_parse, queue_save, bf_url, logger):
                     item_movie.url = url_soup[0]
                     item_movie.img_url = img_url if img_url else ""
                     item_movie.name = name if name else ""
-                    item_movie.year = year if year else ""
+                    item_movie.year = year[0] if year else ""
 
                     item_movie.director = director if director else ""
                     item_movie.screenwriter = screenwriter if screenwriter else ""
@@ -123,7 +124,8 @@ def url_parser(queue_fetch, queue_parse, queue_save, bf_url, logger):
                     item_movie.another_name = another_name if another_name else ""
 
                     item_movie.score = score if score else -1
-                    item_movie.comment = comment if comment else -1
+                    item_movie.comment = comment if comment and ("目前" not in comment) else -1
+                    print(item_movie.comment)
                     item_movie.comment_this_classify = comment_count if comment_count else -1
 
                     item_movie.star_percent = star_percent if star_percent else ""
@@ -144,6 +146,7 @@ def url_parser(queue_fetch, queue_parse, queue_save, bf_url, logger):
                     # save_movies(item_movie)
                 except Exception as ex:
                     logger.error("Url_parser error: %s, flag is %s, Url is %s", ex, flag, url)
+    return
 
 
 if __name__ == '__main__':
@@ -156,10 +159,10 @@ if __name__ == '__main__':
     req_session = requests.Session()
     req_session.cookies = jar_cookies
     logger = log_init("parser")
-    url = "https://movie.douban.com/tag/爱情"
+    url = "https://movie.douban.com/subject/2082328/"
     resp = req_session.get(url)
     soup = BeautifulSoup(resp.text, "html5lib")
-    list_test = ["类型: 爱情", (url, soup), 1000, "base", 3]
+    list_test = ["类型: 爱情", (url, soup), 1000, "detail", 3]
     queue_parse.put(list_test)
     print(queue_fetch.qsize())
     print(queue_parse.qsize())

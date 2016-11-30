@@ -27,6 +27,9 @@ def save_movies(queue_fetch, queue_parse, queue_save, logger):
             except SQLAlchemyError as ex:
                 session.rollback()
                 logger.error("Saver error: %s, %s", movie.name, ex)
+            finally:
+                session.close()
+    return
 
 if __name__ == '__main__':
     queue_fetch = Queue()

@@ -52,7 +52,7 @@ if __name__ == '__main__':
         if th.is_alive():
             print(th.name + " is alive")
             th.join()
-    print("1234")
+    print("the end ...")
     exit()
     # print(queue_url.qsize(), "\t", queue_save.qsize())
     # get_urls(queue_url)
