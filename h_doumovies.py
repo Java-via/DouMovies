@@ -16,17 +16,7 @@ if __name__ == '__main__':
     queue_save = Queue()
     bf_url = BloomFilter(capacity=100000000, error_rate=0.01)
 
-    dict_cookies = {"bid": "Thl_F4uF09U",
-                    "__utma": "30149280.479195561.1479796529.1479796529.1480075114.2",
-                    "__utmz": "30149280.1479796529.1.1.utmcsr=baidu|utmccn=(organic)|utmcmd=organic",
-                    "__utmb": "30149280.0.10.1480075114",
-                    "__utmc": "30149280",
-                    "_pk_id.100001.4cf6": "a6187c9614309e0a.1480075084.1.1480075133.1480075084.",
-                    "_pk_ses.100001.4cf6": "*",
-                    "__utma": "223695111.1427633617.1480075114.1480075114.1480075114.1",
-                    "__utmb": "223695111.0.10.1480075114",
-                    "__utmc": "223695111",
-                    "__utmz": "223695111.1480075114.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)"}
+    dict_cookies = {"bid": "w5aLrOGIE7A"}
     jar_cookies = requests.utils.cookiejar_from_dict(dict_cookies)
     req_session = requests.Session()
     req_session.cookies = jar_cookies

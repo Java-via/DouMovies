@@ -1,6 +1,8 @@
 # _*_ coding: utf-8 _*_
 
 import time
+import random
+import string
 # import logging
 import requests
 from queue import Queue
@@ -17,13 +19,17 @@ def url_fetcher(queue_fetch, queue_parse, req_session, logger):
         try:
             # url = parse.quote(url, safe="%/:=&?~#+!$,;'@()*[]|")
             resp = req_session.get(url)
-            if resp.status_code == 200:
+            if len(resp.content) > 500:
                 soup = BeautifulSoup(resp.text, "html5lib")
                 queue_parse.put([classify, (url, soup), comment_count, flag, repeat])
                 logger.debug("fetcher is running...add to parse %s, %s", queue_fetch.qsize(), queue_parse.qsize())
-            elif resp.status_code == 403:
+            else:
                 logger.warn("Url_fetcher 403: %s, Url is %s", url)
-                req_session.cookies.clear()
+                dict_cookies = {"bid": "".join(random.sample(string.ascii_letters + string.digits, 11))}
+                jar_cookies = requests.utils.cookiejar_from_dict(dict_cookies)
+                req_session = requests.Session()
+                req_session.cookies = jar_cookies
+                logger.warn("clear cookies finish: %s", requests.utils.dict_from_cookiejar(req_session.cookies))
                 queue_fetch.put(classify, url, comment_count, flag, repeat)
         except requests.HTTPError as ex:
             if repeat >= 0:
@@ -34,18 +40,18 @@ def url_fetcher(queue_fetch, queue_parse, req_session, logger):
             logger.error("Url_fetcher Error is %s, Url is %s", exce, url)
     return
 
-if __name__ == '__main__':
-    classify_item = ['类型:爱情', 'https://movie.douban.com/tag/爱情?start=7840&type=T', '10477121', 'base', 3]
-    queue_fetch = Queue()
-    queue_parse = Queue()
-    dict_cookies = {"bid": "Thl_F4uF09U"}
-    jar_cookies = requests.utils.cookiejar_from_dict(dict_cookies)
-    req_session = requests.Session()
-    req_session.cookies = jar_cookies
-    logger = log_init("fetcher")
-    queue_fetch.put(classify_item)
-    print(queue_fetch.qsize())
-    print(queue_parse.qsize())
-    url_fetcher(queue_fetch, queue_parse, req_session, logger)
-    print(queue_fetch.qsize())
-    print(queue_parse.qsize())
+# if __name__ == '__main__':
+#     classify_item = ['类型:爱情', 'https://movie.douban.com/tag/爱情?start=7840&type=T', '10477121', 'base', 3]
+#     queue_fetch = Queue()
+#     queue_parse = Queue()
+#     dict_cookies = {"bid": "".join(random.sample(string.ascii_letters + string.digits, 11))}
+#     jar_cookies = requests.utils.cookiejar_from_dict(dict_cookies)
+#     req_session = requests.Session()
+#     req_session.cookies = jar_cookies
+#     logger = log_init("fetcher")
+#     queue_fetch.put(classify_item)
+#     print(queue_fetch.qsize())
+#     print(queue_parse.qsize())
+#     url_fetcher(queue_fetch, queue_parse, req_session, logger)
+#     print(queue_fetch.qsize())
+#     print(queue_parse.qsize())
