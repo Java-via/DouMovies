@@ -25,28 +25,28 @@ class Movie(BaseModel):
     )
     url = sqlalchemy.Column(
         "m_url",
-        sqlalchemy.VARCHAR(200)
+        sqlalchemy.VARCHAR(300)
     )
     img_url = sqlalchemy.Column(
         "m_imgurl",
-        sqlalchemy.VARCHAR(200)
+        sqlalchemy.VARCHAR(300)
     )
     name = sqlalchemy.Column(
         "m_name",
-        sqlalchemy.VARCHAR(100)
+        sqlalchemy.VARCHAR(300)
     )
     year = sqlalchemy.Column(
         "m_year",
-        sqlalchemy.VARCHAR(100)
+        sqlalchemy.VARCHAR(50)
     )
 
     director = sqlalchemy.Column(
         "m_director",
-        sqlalchemy.VARCHAR(200)
+        sqlalchemy.VARCHAR(500)
     )
     screenwriter = sqlalchemy.Column(
         "m_screenwriter",
-        sqlalchemy.VARCHAR(200)
+        sqlalchemy.VARCHAR(500)
     )
     performer = sqlalchemy.Column(
         "m_performer",
@@ -55,28 +55,28 @@ class Movie(BaseModel):
 
     genre = sqlalchemy.Column(
         "m_genre",
-        sqlalchemy.VARCHAR(200)
+        sqlalchemy.VARCHAR(100)
     )
     country = sqlalchemy.Column(
         "m_country",
-        sqlalchemy.VARCHAR(200)
+        sqlalchemy.VARCHAR(100)
     )
     language = sqlalchemy.Column(
         "m_language",
-        sqlalchemy.VARCHAR(200)
+        sqlalchemy.VARCHAR(100)
     )
 
     release_time = sqlalchemy.Column(
         "m_releasetime",
-        sqlalchemy.VARCHAR(200)
+        sqlalchemy.VARCHAR(100)
     )
     length = sqlalchemy.Column(
         "m_length",
-        sqlalchemy.VARCHAR(200)
+        sqlalchemy.VARCHAR(500)
     )
     another_name = sqlalchemy.Column(
         "m_anothername",
-        sqlalchemy.VARCHAR(200)
+        sqlalchemy.VARCHAR(500)
     )
 
     score = sqlalchemy.Column(
@@ -94,15 +94,15 @@ class Movie(BaseModel):
 
     star_percent = sqlalchemy.Column(
         "m_starpercent",
-        sqlalchemy.VARCHAR(300)
+        sqlalchemy.VARCHAR(500)
     )
     better_than = sqlalchemy.Column(
         "m_betterthan",
-        sqlalchemy.VARCHAR(500)
+        sqlalchemy.VARCHAR(100)
     )
     imdb = sqlalchemy.Column(
         "m_imdb",
-        sqlalchemy.VARCHAR(300)
+        sqlalchemy.VARCHAR(200)
     )
     is_movie = sqlalchemy.Column(
         "m_ismovie",
