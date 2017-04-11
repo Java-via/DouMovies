@@ -125,7 +125,6 @@ def url_parser(queue_fetch, queue_parse, queue_save, bf_url, logger):
 
                     item_movie.score = score if score else -1
                     item_movie.comment = comment if comment and ("目前" not in comment) else -1
-                    print(item_movie.comment)
                     item_movie.comment_this_classify = comment_count if comment_count else -1
 
                     item_movie.star_percent = star_percent if star_percent else ""

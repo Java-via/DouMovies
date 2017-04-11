@@ -19,7 +19,7 @@ def url_fetcher(queue_fetch, queue_parse, req_session, logger):
         try:
             # url = parse.quote(url, safe="%/:=&?~#+!$,;'@()*[]|")
             resp = req_session.get(url)
-            if len(resp.content) > 500:
+            if len(resp.text) > 200:
                 soup = BeautifulSoup(resp.text, "html5lib")
                 queue_parse.put([classify, (url, soup), comment_count, flag, repeat])
                 logger.debug("fetcher is running...add to parse %s, %s", queue_fetch.qsize(), queue_parse.qsize())
