@@ -14,7 +14,9 @@ def url_fetcher(queue_fetch, queue_parse, req_session, logger):
         dict_cookies = {"bid": BID}
         jar_cookies = requests.utils.cookiejar_from_dict(dict_cookies)
         req_session.cookies = jar_cookies
-        req_session.headers.update("User-Agent", random.choice(RANDOM_USER_AGENT))
+        req_session.headers.update({
+            "User-Agent": random.choice(RANDOM_USER_AGENT)
+        })
         logger.debug("fetcher is running... %s, %s", queue_fetch.qsize(), queue_parse.qsize())
         list_url_info = queue_fetch.get()
         classify, url, comment_count, flag, repeat = list_url_info
