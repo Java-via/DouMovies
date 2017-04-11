@@ -3,16 +3,18 @@
 import time
 import random
 import string
-# import logging
 import requests
-from queue import Queue
 from bs4 import BeautifulSoup
-from z_logcnf import log_init
 
 
 def url_fetcher(queue_fetch, queue_parse, req_session, logger):
+    from h_doumovies import RANDOM_USER_AGENT, BID
     while queue_fetch.qsize() > 0:
-        time.sleep(3)
+        time.sleep(5)
+        dict_cookies = {"bid": BID}
+        jar_cookies = requests.utils.cookiejar_from_dict(dict_cookies)
+        req_session.cookies = jar_cookies
+        req_session.headers.update("User-Agent", random.choice(RANDOM_USER_AGENT))
         logger.debug("fetcher is running... %s, %s", queue_fetch.qsize(), queue_parse.qsize())
         list_url_info = queue_fetch.get()
         classify, url, comment_count, flag, repeat = list_url_info
