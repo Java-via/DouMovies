@@ -33,12 +33,14 @@ def url_parser(queue_fetch, queue_parse, queue_save, bf_url, logger):
                         if not bf_url.add(detail_url):
                             queue_fetch.put([classify, detail_url, comment_count, "detail", 2])
 
-                    next_page = soup.find("div", class_="paginator").find_all("a")[-1].get_text()
-                    if next_page.strip() == "后页>":
-                        classify_next_page = soup.find("div", class_="paginator").find_all("a")[-1]["href"]
-                        logger.debug("Parse is running...%s get base url...%s, %s, %s", queue_fetch.qsize(), classify_next_page, flag, queue_parse.qsize())
-                        if not bf_url.add(classify_next_page):
-                            queue_fetch.put([classify, classify_next_page, comment_count, flag, 3])
+                    div_page = soup.find("div", class_="paginator")
+                    if div_page:
+                        next_page = div_page.find_all("a")[-1].get_text()
+                        if next_page.strip() == "后页>":
+                            classify_next_page = soup.find("div", class_="paginator").find_all("a")[-1]["href"]
+                            logger.debug("Parse is running...%s get base url...%s, %s, %s", queue_fetch.qsize(), classify_next_page, flag, queue_parse.qsize())
+                            if not bf_url.add(classify_next_page):
+                                queue_fetch.put([classify, classify_next_page, comment_count, flag, 3])
                     else:
                         logger.debug("This classify get all movies_url: %s", classify)
                 except Exception as ex:
@@ -159,7 +161,7 @@ if __name__ == '__main__':
     req_session = requests.Session()
     req_session.cookies = jar_cookies
     logger = log_init("parser")
-    url = "https://movie.douban.com/subject/2082328/"
+    url = "https://movie.douban.com/subject/26580232/"
     resp = req_session.get(url)
     soup = BeautifulSoup(resp.text, "html5lib")
     list_test = ["类型: 爱情", (url, soup), 1000, "detail", 3]
