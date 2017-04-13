@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 def url_fetcher(queue_fetch, queue_parse, req_session, logger):
     from h_doumovies import RANDOM_USER_AGENT, BID
     while queue_fetch.qsize() > 0:
-        time.sleep(5)
+        time.sleep(10)
         dict_cookies = {"bid": BID}
         jar_cookies = requests.utils.cookiejar_from_dict(dict_cookies)
         req_session.cookies = jar_cookies
@@ -23,7 +23,7 @@ def url_fetcher(queue_fetch, queue_parse, req_session, logger):
         try:
             # url = parse.quote(url, safe="%/:=&?~#+!$,;'@()*[]|")
             resp = req_session.get(url)
-            if len(resp.content) > 500:
+            if len(resp.text) > 200:
                 soup = BeautifulSoup(resp.text, "html5lib")
                 queue_parse.put([classify, (url, soup), comment_count, flag, repeat])
                 logger.debug("fetcher is running...add to parse %s, %s", queue_fetch.qsize(), queue_parse.qsize())

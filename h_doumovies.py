@@ -67,6 +67,7 @@ if __name__ == '__main__':
     queue_save = Queue()
     bf_url = BloomFilter(capacity=100000000, error_rate=0.01)
 
+    dict_cookies = {"bid": "6XeB4bwmsH0"}
     dict_cookies = {"bid": BID}
     jar_cookies = requests.utils.cookiejar_from_dict(dict_cookies)
     req_session = requests.Session()

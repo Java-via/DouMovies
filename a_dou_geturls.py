@@ -19,7 +19,7 @@ def get_urls(queue_url, bf_url, req_session, logger):
     while queue_ori.qsize() > 0:
         url = queue_ori.get()
         resp = req_session.get(url)
-        if len(resp.content) > 500:
+        if len(resp.text) > 200:
             soup = BeautifulSoup(resp.text, "html5lib")
             tb = soup.find("div", class_="clearfix")
             list_title = [item.get_text().replace("·", "").strip() for item in tb.find_all("a", class_="tag-title-wrapper")]

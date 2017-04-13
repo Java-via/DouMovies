@@ -9,7 +9,7 @@ from z_logcnf import log_init
 
 
 def save_movies(queue_fetch, queue_parse, queue_save, logger):
-    engine = sqlalchemy.create_engine("mysql+pymysql://root:@localhost:3306/db_doumovies?charset=utf8", echo=True)
+    engine = sqlalchemy.create_engine("mysql+pymysql://root:rootroot321@localhost:3306/db_doumovies?charset=utf8", echo=True)
     # engine = sqlalchemy.create_engine("mysql+pymysql://root:mysql123@localhost:3306/db_doumovies?charset=utf8", echo=True)
     db_session = sessionmaker(bind=engine)
     session = db_session()
