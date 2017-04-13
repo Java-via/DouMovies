@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 def url_fetcher(queue_fetch, queue_parse, req_session, logger):
     from h_doumovies import RANDOM_USER_AGENT, BID
     while queue_fetch.qsize() > 0:
-        time.sleep(5)
+        time.sleep(10)
         dict_cookies = {"bid": BID}
         jar_cookies = requests.utils.cookiejar_from_dict(dict_cookies)
         req_session.cookies = jar_cookies
