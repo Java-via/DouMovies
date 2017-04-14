@@ -4,7 +4,7 @@ import sqlalchemy
 from sqlalchemy.ext import declarative
 # from sqlalchemy.orm import sessionmaker
 
-engine = sqlalchemy.create_engine("mysql+pymysql://root:rootroot321@localhost:3306/db_doumovies?charset=utf8", echo=True)
+engine = sqlalchemy.create_engine("mysql+pymysql://root:@localhost:3306/db_doumovies?charset=utf8", echo=True)
 
 BaseModel = declarative.declarative_base()
 

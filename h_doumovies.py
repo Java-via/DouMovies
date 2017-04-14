@@ -57,7 +57,7 @@ RANDOM_USER_AGENT = [random.choice(USER_AGENT_MOBILE), random.choice(USER_AGENT_
 ACCEPT = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
 ACCEPT_ENCODING = "gzip, deflate, sdch, br"
 
-BID = rstr.xeger(r"[A-Z]{2}[a-z][0-9]{3}[A-Z]{3}[a-z][A-Z]")
+BID = random.choice(["cy6PWUTjIjs", "guBKEHnts74"])
 
 if __name__ == '__main__':
     BaseModel.metadata.create_all(engine)
